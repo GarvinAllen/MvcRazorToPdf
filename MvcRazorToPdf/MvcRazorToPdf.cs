@@ -47,6 +47,38 @@ namespace MvcRazorToPdf
             return output;
         }
 
+        public byte[] GeneratePdfOutputFromHtmlString(ControllerContext context, object model = null, string htmlString = null,
+            Action<PdfWriter, Document> configureSettings = null)
+        {
+            context.Controller.ViewData.Model = model;
+
+            byte[] output;
+            using (var document = new Document())
+            {
+                using (var workStream = new MemoryStream())
+                {
+                    PdfWriter writer = PdfWriter.GetInstance(document, workStream);
+                    writer.CloseStream = false;
+
+                    if (configureSettings != null)
+                    {
+                        configureSettings(writer, document);
+                    }
+                    document.Open();
+
+
+                    using (var reader = new StringReader(htmlString))
+                    {
+                        XMLWorkerHelper.GetInstance().ParseXHtml(writer, document, reader);
+
+                        document.Close();
+                        output = workStream.ToArray();
+                    }
+                }
+            }
+            return output;
+        }
+
         public string RenderRazorView(ControllerContext context, string viewName)
         {
             IView viewEngineResult = ViewEngines.Engines.FindView(context, viewName, null).View;

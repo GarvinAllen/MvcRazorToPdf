@@ -12,5 +12,11 @@ namespace MvcRazorToPdf
         {
             return new MvcRazorToPdf().GeneratePdfOutput(context, model, viewName, configureSettings);
         }
+
+        public static byte[] GeneratePdfFromHtmlString(this ControllerContext context, object model = null, string htmlString = null,
+            Action<PdfWriter, Document> configureSettings = null)
+        {
+            return new MvcRazorToPdf().GeneratePdfOutputFromHtmlString(context, model, htmlString, configureSettings);
+        }
     }
 }
